@@ -21,7 +21,7 @@ jobs:
         pip install wheel
         pip install git+https://github.com/pythonnet/pythonnet@438bcdd3f0b2e2ee358b407cfc96e4385e5783fc
         pip install .[all] pywebview==3.4 pywin32==304
-        cp ./jellyfin_mpv_shim/messages/zh_Hans/LC_MESSAGES/base.po ./jellyfin_mpv_shim/messages/zh_Hans/LC_MESSAGES/base.po
+        cp ./jellyfin_mpv_shim/messages/zh_Hans/LC_MESSAGES/base.po ./jellyfin_mpv_shim/messages/base.po
         ./regen_pot.sh
         ./gen_pkg.sh --skip-build
         python ./get_pywebview_natives.py
