@@ -1,46 +1,46 @@
-名字: 建设
+name: build
 
-在:
-推:
-分支:
-      - 掌握
-工作:
-build-win64:
-连续运行: windows-最新
-步伐:
-    - 使用: 动作/签出@v4
-    - 名字: 设置Python 3.9
-使用: 操作/设置-python@v4
-随着:
-python版本: 3.9
-    - 名字: 安装依赖项
-奔跑: |
-curl-L https://github . com/iwalton 3/MPV-winbuild-cmake/releases/download/v 2023 03 04-git-362256 e/MPV-dev-x86 _ 64-2023 03 04-git-362256 e . 7z > MPV . 7z
-7z x mpv.7z
-mv libmpv-2.dll mpv-2.dll
-pip安装轮
-pip安装gettext
-pip安装git+https://github . com/python net/python net @ 438 bcdd 3 f 0 b 2e 2 ee 358 b 407 CFC 96 e 4385 e 5783 fc
-pip安装。[全部] pywebview==3.4 pywin32==304
-比较/jellyfin _ MPV _ shim/MESSAGES/zh _ Hans/LC _ MESSAGES/base . po。/jelly fin _ MPV _ shim/messages/base . po
-。/regen_pot.sh
-。/gen_pkg.sh -跳过-生成
-python。/get_pywebview_natives.py
-壳: 尝试
-    - 名字: PyInstaller引导加载程序
-奔跑: |
-。/gen _ pkg . sh-get-py installer；CD py installer/boot loader；python。/waf dist clean all；激光唱片..；pip安装。
-壳: 尝试
-    - 名字: 主建筑
-奔跑: |
-。\build-win.bat
-壳: 煤矿管理局
-    - 名字: 工件重命名
-奔跑: |
-。/artifacts.sh标准
-壳: 尝试
-    - 名字: 归档生产工件
-使用: 动作/上传-工件@v3
-随着:
-名字: 窗子
-小路: ${{github.workspace}}/publish/Installer/*。可执行程序的扩展名
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-win64:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        curl -L https://github.com/iwalton3/mpv-winbuild-cmake/releases/download/v20230304-git-362256e/mpv-dev-x86_64-20230304-git-362256e.7z > mpv.7z
+        7z x mpv.7z
+        mv libmpv-2.dll mpv-2.dll
+        pip install wheel
+        pip install gettext
+        pip install git+https://github.com/pythonnet/pythonnet@438bcdd3f0b2e2ee358b407cfc96e4385e5783fc
+        pip install .[all] pywebview==3.4 pywin32==304
+        cp ./jellyfin_mpv_shim/messages/zh_Hans/LC_MESSAGES/base.po ./jellyfin_mpv_shim/messages/base.po
+        ./regen_pot.sh
+        ./gen_pkg.sh --skip-build
+        python ./get_pywebview_natives.py
+      shell: bash
+    - name: PyInstaller Bootloader
+      run: |
+        ./gen_pkg.sh --get-pyinstaller; cd pyinstaller/bootloader; python ./waf distclean all; cd ..; pip install .
+      shell: bash
+    - name: Main Build
+      run: |
+        .\build-win.bat
+      shell: cmd
+    - name: Artifact Rename
+      run: |
+        ./artifacts.sh standard
+      shell: bash
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows
+        path: ${{ github.workspace }}/publish/Installer/*.exe
